@@ -4,13 +4,13 @@ set -euo pipefail
 BLOBS=examples/blobs
 ZOT=localhost:10500
 GARAGE=localhost:10900
-BUCKET=ocm-examples-public
+BUCKET=ocm-examples
 AWS_ACCESS_KEY_ID=GK626462227e739523e7936f5f
 AWS_SECRET_ACCESS_KEY=876ae9b4f20503bea48674e34c2da95d581626721131d54c5a3257e0b21c725d
 AWS_DEFAULT_REGION=garage
 export AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_DEFAULT_REGION
 
-ZOT_AUTH_CONFIG=.config/oras.json
+ZOT_AUTH_CONFIG=.dockerconfig.json
 
 log() { echo "==> $*"; }
 step() { echo "  -> $*"; }
@@ -39,14 +39,11 @@ if [[ -n "$NODE_ID" ]]; then
 else
   step "layout already applied"
 fi
-$CONTAINER_RUNTIME exec "$GARAGE_CONTAINER" /garage bucket create ocm-examples-public  2>/dev/null || true
-$CONTAINER_RUNTIME exec "$GARAGE_CONTAINER" /garage bucket create ocm-examples-private 2>/dev/null || true
+$CONTAINER_RUNTIME exec "$GARAGE_CONTAINER" /garage bucket create ocm-examples 2>/dev/null || true
 if ! $CONTAINER_RUNTIME exec "$GARAGE_CONTAINER" /garage key info GK626462227e739523e7936f5f > /dev/null 2>&1; then
   $CONTAINER_RUNTIME exec "$GARAGE_CONTAINER" /garage key import --yes -n ocm-key GK626462227e739523e7936f5f 876ae9b4f20503bea48674e34c2da95d581626721131d54c5a3257e0b21c725d
 fi
-$CONTAINER_RUNTIME exec "$GARAGE_CONTAINER" /garage bucket allow --read --write --key GK626462227e739523e7936f5f ocm-examples-public  2>/dev/null || true
-$CONTAINER_RUNTIME exec "$GARAGE_CONTAINER" /garage bucket allow --read --write --key GK626462227e739523e7936f5f ocm-examples-private 2>/dev/null || true
-$CONTAINER_RUNTIME exec "$GARAGE_CONTAINER" /garage bucket allow-anonymous-read ocm-examples-public 2>/dev/null || true
+$CONTAINER_RUNTIME exec "$GARAGE_CONTAINER" /garage bucket allow --read --write --key GK626462227e739523e7936f5f ocm-examples 2>/dev/null || true
 step "garage init done"
 
 # ── authenticate to local zot ─────────────────────────────────────────────────
@@ -59,9 +56,10 @@ oras login "$ZOT" --registry-config "$ZOT_AUTH_CONFIG" \
 # CVE-2019-9511, CVE-2019-9513 + dozens of Debian base CVEs
 log "nginx 1.14.0"
 
-step "copy to OCI layout dir"
-oras copy docker.io/library/nginx:1.14.0 \
-  --to-oci-layout "$BLOBS/nginx-oci-layout:1.14.0"
+step "copy to OCI layout dir (OCI format, all platforms)"
+skopeo copy --format oci --all \
+  docker://docker.io/library/nginx:1.14.0 \
+  oci:$BLOBS/nginx-oci-layout:1.14.0
 
 step "pack OCI layout dir as tar (nginx-local input blob)"
 tar -czf "$BLOBS/nginx-1.14.0.tar" -C "$BLOBS/nginx-oci-layout" .
@@ -122,22 +120,14 @@ oras push --registry-config "$ZOT_AUTH_CONFIG" --plain-http \
   "$ZOT/ocm-examples/sbom-oras:1.0.0" \
   "$BLOBS/sbom-vulnerable.cdx.json:application/vnd.cyclonedx+json"
 
-# ── OCM component archive ─────────────────────────────────────────────────────
-log "building OCM CTF archive"
+# ── OCM components → local zot ───────────────────────────────────────────────
+log "pushing OCM components to local zot registry"
 
-#step "adding 1-zot-registry"
-#ocm add component-version --repository ./ctf --constructor examples/1-zot-registry.yml
+step "adding 1-zot-registry"
+ocm add cv --repository "oci::http://$ZOT" --constructor examples/1-zot-registry.yml --config .ocmconfig
 
 step "adding 2-known-vulnerabilities"
-ocm add component-version --skip-reference-digest-processing --repository ./ctf --constructor examples/2-known-vulnerabilities.yml
+ocm add cv --skip-reference-digest-processing --repository "oci::http://$ZOT" --constructor examples/2-known-vulnerabilities.yml --config .ocmconfig
 
-log "OCM archive ready at ctf/"
-
-# ── push CTF archive to local zot ────────────────────────────────────────────
-#log "pushing OCM components to local zot registry"
-
-#step "transfer ctf → $ZOT (ociRegistry)"
-#ocm transfer componentarchive --overwrite ctf "http://$ZOT"
-
-#log "Done. Components available at $ZOT:"
-#oras repo list "$ZOT" --registry-config "$ZOT_AUTH_CONFIG" --plain-http
+log "done — components in $ZOT:"
+ocm get cv --repo "oci::http://$ZOT"

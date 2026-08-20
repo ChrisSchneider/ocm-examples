@@ -2,6 +2,15 @@
 
 Test examples of OCM components covering resource and access type combinations
 
+**Prerequisites:**
+
+* `docker compose`
+* `oras`
+* `skopeo`
+* `aws` (AWS CLI v2)
+* `ocm` (OCM CLI)
+* `gh` (GitHub CLI, for ghcr.io auth) - logged into your GitHub account
+
 ---
 
 ## Artifact Types
@@ -53,20 +62,28 @@ Full reference: [ocm.software/docs/reference/input-and-access-types/](https://oc
 
 ## Setting up the Local Registries
 
-**Prerequisites:** `docker compose`, `oras`, `aws` (AWS CLI v2), `ocm` (OCM CLI), `gh` (GitHub CLI, for ghcr.io auth).
-
 `local-registries/docker-compose.yml` spins up two services for local testing:
 
 | Service | Type | Port | Purpose |
 |---|---|---|---|
 | **zot** | OCI registry | `localhost:10500` | `ociArtifact/v1`, `ociImage`, OCI Helm |
-| **garage** | S3-compatible store | `localhost:10900` | `s3/v1`, `s3/v2` |
+| **garage** | S3-compatible store | `localhost:10900` | `s3/v1`, `s3/v2` (bucket: `ocm-examples`) |
 
 **Credentials:** `ocmuser` / `ocmpassword` (both services).
+
+Start with:
+
+    cd local-registries
+    docker-compose up
 
 ---
 
 ## Examples
+
+Log into `ghcr.io` with your GitHub user:
+
+    gh auth token | oras login ghcr.io --registry-config .dockerconfig.json \
+    --username "$(gh api user --jq .login)" --password-stdin
 
 Run `prepare.sh` to download local resources, push to Zot/S3 and create the OCM component:
 

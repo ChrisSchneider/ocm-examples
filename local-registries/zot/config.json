@@ -13,31 +13,13 @@
     },
     "accessControl": {
       "repositories": {
-        "public/**": {
-          "policies": [
-            {
-              "users": [],
-              "actions": ["read"]
-            }
-          ],
-          "anonymousPolicy": ["read"]
-        },
-        "private/**": {
-          "policies": [
-            {
-              "users": ["ocmuser"],
-              "actions": ["read", "create", "update", "delete"]
-            }
-          ]
-        },
         "**": {
           "policies": [
             {
               "users": ["ocmuser"],
               "actions": ["read", "create", "update", "delete"]
             }
-          ],
-          "anonymousPolicy": ["read"]
+          ]
         }
       }
     }
@@ -47,6 +29,9 @@
   },
   "extensions": {
     "search": {
+      "enable": true
+    },
+    "ui": {
       "enable": true
     }
   }

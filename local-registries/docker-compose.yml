@@ -10,19 +10,12 @@
 #   user:     ocmuser
 #   password: ocmpassword
 #
-# Public access (no auth):
-#   zot:       repos under  localhost:10500/public/
-#   garage:    bucket       ocm-examples-public  (anonymous read)
-#
-# Private access (auth required):
-#   zot:       repos under  localhost:10500/private/
-#   garage:    bucket       ocm-examples-private (key required)
+# All access requires authentication.
 #
 services:
 
   # ── OCI registry (zot) ───────────────────────────────────────────────────
-  # public/**  → anonymous read
-  # private/** → ocmuser/ocmpassword
+  # all repos → ocmuser/ocmpassword required
   zot:
     image: ghcr.io/project-zot/zot-linux-amd64:latest
     container_name: ocm-zot
@@ -37,8 +30,7 @@ services:
   # ── S3-compatible object storage (Garage) ────────────────────────────────
   # S3 API:   http://localhost:10900
   # Admin API: http://localhost:10903
-  # ocm-examples-public  bucket → anonymous read; key GK626462227e739523e7936f5f for write
-  # ocm-examples-private bucket → key GK626462227e739523e7936f5f required
+  # ocm-examples bucket → key GK626462227e739523e7936f5f required
   garage:
     image: dxflrs/garage:v1.0.1
     container_name: ocm-garage

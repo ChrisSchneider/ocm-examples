@@ -2,16 +2,6 @@ name: chrisschneider.dev/ocm-examples/zot-registry
 version: 2.1.0
 provider:
   name: acme
-labels:
-  - name: security.ocm.software/risk-profile
-    version: v1
-    value:
-      network_exposure: protected
-      authentication_enforced: true
-      user_interaction: operator
-      confidentiality_requirement: low
-      integrity_requirement: high
-      availability_requirement: low
 
 resources:
   # zot container image — multi-arch OCI index (linux/amd64, linux/arm64, darwin/amd64, darwin/arm64)

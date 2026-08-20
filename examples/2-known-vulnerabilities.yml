@@ -1,5 +1,5 @@
 name: chrisschneider.dev/ocm-examples/known-vulnerabilities
-version: 1.0.0
+version: 1.0.2
 provider:
   name: acme
 
@@ -13,12 +13,12 @@ resources:
       type: ociArtifact/v1
       imageReference: docker.io/library/nginx:1.14.0
   - name: nginx-local
-    type: ociImage
+    type: ociArtifact
     version: 1.14.0
     relation: local
     input:
-      type: file
-      path: blobs/nginx-1.14.0.tar
+      type: dir/v1
+      path: blobs/nginx-oci-layout/
       mediaType: application/vnd.ocm.software.oci.layout.v1+tar
 
   # kubectl v1.20.0 — CVE-2021-25741 (symlink path traversal)
@@ -43,7 +43,7 @@ resources:
     access:
       type: s3/v2
       endpoint: http://localhost:10900
-      bucket: ocm-examples-public
+      bucket: ocm-examples
       key: kubectl-v1.20.0-linux-amd64
       region: garage
   - name: kubectl-local
@@ -83,17 +83,17 @@ resources:
     access:
       type: s3/v2
       endpoint: http://localhost:10900
-      bucket: ocm-examples-public
+      bucket: ocm-examples
       key: vuln-dir.tar.gz
       region: garage
   - name: vuln-dir-local
-    type: directoryTree
+    type: blob
     version: 1.0.0
     relation: local
     input:
-      type: file
-      path: blobs/vuln-dir.tar.gz
-      mediaType: application/vnd.oci.image.layer.v1.tar+gzip
+      type: Dir/v1
+      path: blobs/vuln-dir/
+      compress: true
 
   # CycloneDX SBOM listing log4j-core 2.14.1, lodash 4.17.15, express 4.17.1
   # CVE-2021-44228 (Log4Shell), CVE-2021-23337, CVE-2022-24999
