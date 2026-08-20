@@ -49,11 +49,6 @@ $CONTAINER_RUNTIME exec "$GARAGE_CONTAINER" /garage bucket allow --read --write 
 $CONTAINER_RUNTIME exec "$GARAGE_CONTAINER" /garage bucket allow-anonymous-read ocm-examples-public 2>/dev/null || true
 step "garage init done"
 
-# ── authenticate to ghcr.io ───────────────────────────────────────────────────
-log "authenticating to ghcr.io"
-gh auth token | oras login ghcr.io --registry-config "$ZOT_AUTH_CONFIG" \
-  --username "$(gh api user --jq .login)" --password-stdin
-
 # ── authenticate to local zot ─────────────────────────────────────────────────
 log "authenticating to zot"
 mkdir -p .config
@@ -130,8 +125,8 @@ oras push --registry-config "$ZOT_AUTH_CONFIG" --plain-http \
 # ── OCM component archive ─────────────────────────────────────────────────────
 log "building OCM CTF archive"
 
-step "adding 1-zot-registry"
-ocm add component-version --repository ./ctf --constructor examples/1-zot-registry.yml
+#step "adding 1-zot-registry"
+#ocm add component-version --repository ./ctf --constructor examples/1-zot-registry.yml
 
 step "adding 2-known-vulnerabilities"
 ocm add component-version --skip-reference-digest-processing --repository ./ctf --constructor examples/2-known-vulnerabilities.yml
@@ -139,10 +134,10 @@ ocm add component-version --skip-reference-digest-processing --repository ./ctf 
 log "OCM archive ready at ctf/"
 
 # ── push CTF archive to local zot ────────────────────────────────────────────
-log "pushing OCM components to local zot registry"
+#log "pushing OCM components to local zot registry"
 
-step "transfer ctf → $ZOT (ociRegistry)"
-ocm transfer componentarchive --overwrite ctf "http://$ZOT"
+#step "transfer ctf → $ZOT (ociRegistry)"
+#ocm transfer componentarchive --overwrite ctf "http://$ZOT"
 
-log "Done. Components available at $ZOT:"
-oras repo list "$ZOT" --registry-config "$ZOT_AUTH_CONFIG" --plain-http
+#log "Done. Components available at $ZOT:"
+#oras repo list "$ZOT" --registry-config "$ZOT_AUTH_CONFIG" --plain-http

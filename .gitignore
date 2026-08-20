@@ -1,3 +1,4 @@
 ctf/
 .config/
 examples/blobs/
+!examples/blobs/sbom-vulnerable.cdx.json
