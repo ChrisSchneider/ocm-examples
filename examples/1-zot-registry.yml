@@ -1,0 +1,110 @@
+name: chrisschneider.dev/ocm-examples/zot-registry
+version: 2.1.0
+provider:
+  name: acme
+labels:
+  - name: security.ocm.software/risk-profile
+    version: v1
+    value:
+      network_exposure: protected
+      authentication_enforced: true
+      user_interaction: operator
+      confidentiality_requirement: low
+      integrity_requirement: high
+      availability_requirement: low
+
+resources:
+  # zot container image — multi-arch OCI index (linux/amd64, linux/arm64, darwin/amd64, darwin/arm64)
+  - name: zot
+    type: ociImage
+    version: 2.1.0
+    relation: external
+    labels:
+      - name: security.ocm.software/risk-profile
+        version: v1
+        value:
+          network_exposure: public
+          authentication_enforced: true
+          user_interaction: end-user
+          confidentiality_requirement: low
+          integrity_requirement: high
+          availability_requirement: high
+    access:
+      type: ociArtifact/v1
+      imageReference: ghcr.io/project-zot/zot:v2.1.0
+
+  # zli — zot CLI binary, downloaded via wget; one entry per platform
+  - name: zli
+    type: executable
+    version: 2.1.0
+    relation: external
+    extraIdentity:
+      os: linux
+      architecture: amd64
+    labels:
+      - name: security.ocm.software/risk-profile
+        version: v1
+        value:
+          network_exposure: private
+          authentication_enforced: false
+          user_interaction: operator
+          confidentiality_requirement: none
+          integrity_requirement: high
+          availability_requirement: none
+    access:
+      type: wget/v1
+      url: https://github.com/project-zot/zot/releases/download/v2.1.0/zli-linux-amd64
+      mediaType: application/octet-stream
+
+  - name: zli
+    type: executable
+    version: 2.1.0
+    relation: external
+    extraIdentity:
+      os: linux
+      architecture: arm64
+    labels:
+      - name: security.ocm.software/risk-profile
+        version: v1
+        value:
+          network_exposure: private
+          authentication_enforced: false
+          user_interaction: operator
+          confidentiality_requirement: none
+          integrity_requirement: high
+          availability_requirement: none
+    access:
+      type: wget/v1
+      url: https://github.com/project-zot/zot/releases/download/v2.1.0/zli-linux-arm64
+      mediaType: application/octet-stream
+
+  # zot Helm chart from the official OCI Helm registry
+  - name: zot-chart
+    type: helmChart
+    version: 0.1.60
+    relation: external
+    labels:
+      - name: security.ocm.software/risk-profile
+        version: v1
+        value:
+          network_exposure: protected
+          authentication_enforced: true
+          user_interaction: operator
+          confidentiality_requirement: low
+          integrity_requirement: high
+          availability_requirement: low
+    access:
+      type: helm/v1
+      helmChart: zot:0.1.60
+      helmRepository: https://zotregistry.dev/helm-charts
+
+sources:
+  # zot source code at the v2.1.0 release tag
+  - name: zot-source
+    type: git
+    version: 2.1.0
+    access:
+      type: gitHub/v1
+      repoUrl: https://github.com/project-zot/zot
+      commit: e5eacaa082c9fa9f85fb4548841e8dc9f1918590
+      ref: refs/tags/v2.1.0

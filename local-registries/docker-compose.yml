@@ -1,0 +1,60 @@
+# Local registry stack for OCM examples.
+#
+# All ports are in the 10xxx range to avoid conflicts with host services.
+#
+# Services:
+#   zot       — OCI registry         port 10500  → ociArtifact/v1, ociImage, helm OCI
+#   garage    — S3-compatible store   port 10900  → s3/v1, s3/v2
+#
+# Credentials (all services):
+#   user:     ocmuser
+#   password: ocmpassword
+#
+# Public access (no auth):
+#   zot:       repos under  localhost:10500/public/
+#   garage:    bucket       ocm-examples-public  (anonymous read)
+#
+# Private access (auth required):
+#   zot:       repos under  localhost:10500/private/
+#   garage:    bucket       ocm-examples-private (key required)
+#
+services:
+
+  # ── OCI registry (zot) ───────────────────────────────────────────────────
+  # public/**  → anonymous read
+  # private/** → ocmuser/ocmpassword
+  zot:
+    image: ghcr.io/project-zot/zot-linux-amd64:latest
+    container_name: ocm-zot
+    ports:
+      - "10500:10500"
+    volumes:
+      - ./zot/config.json:/etc/zot/config.json:ro
+      - ./zot/htpasswd:/etc/zot/htpasswd:ro
+      - zot-data:/var/lib/registry
+    restart: unless-stopped
+
+  # ── S3-compatible object storage (Garage) ────────────────────────────────
+  # S3 API:   http://localhost:10900
+  # Admin API: http://localhost:10903
+  # ocm-examples-public  bucket → anonymous read; key GK626462227e739523e7936f5f for write
+  # ocm-examples-private bucket → key GK626462227e739523e7936f5f required
+  garage:
+    image: dxflrs/garage:v1.0.1
+    container_name: ocm-garage
+    ports:
+      - "10900:3900"   # S3 API
+      - "10903:3903"   # Admin API
+    environment:
+      GARAGE_RPC_SECRET: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      GARAGE_ADMIN_TOKEN: "garage-admin-token"
+    volumes:
+      - ./garage/garage.toml:/etc/garage.toml:ro
+      - garage-meta:/var/lib/garage/meta
+      - garage-data:/var/lib/garage/data
+    restart: unless-stopped
+
+volumes:
+  zot-data:
+  garage-meta:
+  garage-data:

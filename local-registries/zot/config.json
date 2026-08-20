@@ -1,0 +1,53 @@
+{
+  "distSpecVersion": "1.1.0",
+  "storage": {
+    "rootDirectory": "/var/lib/registry"
+  },
+  "http": {
+    "address": "0.0.0.0",
+    "port": "10500",
+    "auth": {
+      "htpasswd": {
+        "path": "/etc/zot/htpasswd"
+      }
+    },
+    "accessControl": {
+      "repositories": {
+        "public/**": {
+          "policies": [
+            {
+              "users": [],
+              "actions": ["read"]
+            }
+          ],
+          "anonymousPolicy": ["read"]
+        },
+        "private/**": {
+          "policies": [
+            {
+              "users": ["ocmuser"],
+              "actions": ["read", "create", "update", "delete"]
+            }
+          ]
+        },
+        "**": {
+          "policies": [
+            {
+              "users": ["ocmuser"],
+              "actions": ["read", "create", "update", "delete"]
+            }
+          ],
+          "anonymousPolicy": ["read"]
+        }
+      }
+    }
+  },
+  "log": {
+    "level": "info"
+  },
+  "extensions": {
+    "search": {
+      "enable": true
+    }
+  }
+}
