@@ -1,4 +1,3 @@
-ctf/
-.config/
-examples/blobs/
+.dockerconfig.json
+examples/blobs/*
 !examples/blobs/sbom-vulnerable.cdx.json
