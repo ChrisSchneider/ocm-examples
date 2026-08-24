@@ -24,6 +24,7 @@ services:
     volumes:
       - ./zot/config.json:/etc/zot/config.json:ro
       - ./zot/htpasswd:/etc/zot/htpasswd:ro
+      - ./zot/certs:/etc/zot/certs:ro
       - zot-data:/var/lib/registry
     restart: unless-stopped
 

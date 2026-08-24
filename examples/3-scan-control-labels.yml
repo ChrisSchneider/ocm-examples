@@ -1,0 +1,270 @@
+components:
+
+  # Component-level skip: all resources inherit skip for both scan types.
+  # Use case: third-party component already scanned upstream.
+  - name: chrisschneider.dev/ocm-examples/scan-control-skip-component
+    version: 1.1.0
+    provider:
+      name: acme
+    labels:
+      - name: odg.ocm.software/binary-scan-policy
+        version: v1
+        value:
+          policy: skip
+      - name: odg.ocm.software/source-scan-policy
+        version: v1
+        value:
+          policy: skip
+      # - name: odg.ocm.software/responsibles
+      #   version: v1
+      #   value:
+      #     - type: codeowners
+    resources:
+      - name: nginx
+        type: ociImage
+        version: 1.25.4
+        relation: external
+        access:
+          type: ociArtifact/v1
+          imageReference: docker.io/library/nginx:1.25.4
+        labels:
+          - name: security.ocm.software/risk-profile
+            version: v1
+            value:
+              network_exposure: public
+              authentication_enforced: false
+              user_interaction: end-user
+              confidentiality_requirement: low
+              integrity_requirement: high
+              availability_requirement: high
+      - name: redis
+        type: ociImage
+        version: 7.2.4
+        relation: external
+        access:
+          type: ociArtifact/v1
+          imageReference: docker.io/library/redis:7.2.4
+        labels:
+          - name: security.ocm.software/risk-profile
+            version: v1
+            value:
+              network_exposure: private
+              authentication_enforced: true
+              user_interaction: operator
+              confidentiality_requirement: high
+              integrity_requirement: high
+              availability_requirement: high
+    sources:
+      - name: ocm-examples-source
+        type: git
+        version: 1.1.0
+        access:
+          type: gitHub/v1
+          repoUrl: https://github.com/ChrisSchneider/ocm-examples
+          commit: e3003c09c01d307a4ffd1e0ce4ca2fcc685f6499
+
+  # Resource-level labels: scan-worthy image gets scan, minimal distroless gets skip.
+  - name: chrisschneider.dev/ocm-examples/scan-control-skip-some-resources
+    version: 1.1.0
+    provider:
+      name: acme
+    # labels:
+    #   - name: odg.ocm.software/responsibles
+    #     version: v1
+    #     value:
+    #       - type: codeowners
+    resources:
+      # alpine has known CVEs — meaningful to scan
+      - name: alpine-scan-binary
+        type: ociImage
+        version: 3.19.0
+        relation: external
+        access:
+          type: ociArtifact/v1
+          imageReference: docker.io/library/alpine:3.19
+        labels:
+          - name: odg.ocm.software/binary-scan-policy
+            version: v1
+            value:
+              policy: scan
+          - name: security.ocm.software/risk-profile
+            version: v1
+            value:
+              network_exposure: protected
+              authentication_enforced: true
+              user_interaction: operator
+              confidentiality_requirement: low
+              integrity_requirement: high
+              availability_requirement: low
+      # debian:10 (buster, EOL) — scan skipped; already processed by upstream security pipeline
+      - name: debian-buster-skip-binary
+        type: ociImage
+        version: 10.13.0
+        relation: external
+        access:
+          type: ociArtifact/v1
+          imageReference: docker.io/library/debian:10.13
+        labels:
+          - name: odg.ocm.software/binary-scan-policy
+            version: v1
+            value:
+              policy: skip
+          - name: security.ocm.software/risk-profile
+            version: v1
+            value:
+              network_exposure: private
+              authentication_enforced: true
+              user_interaction: operator
+              confidentiality_requirement: none
+              integrity_requirement: low
+              availability_requirement: none
+    sources:
+      - name: ocm-examples-source-skip
+        type: git
+        version: 1.1.0
+        access:
+          type: gitHub/v1
+          repoUrl: https://github.com/ChrisSchneider/ocm-examples
+          commit: ca91179ae58562b1a70e32d236bbee2c1ffc5a69
+        labels:
+          - name: odg.ocm.software/source-scan-policy
+            version: v1
+            value:
+              policy: skip
+
+  # Same as scan-control-skip-component but with legacy labels.
+  - name: chrisschneider.dev/ocm-examples/scan-control-skip-component-legacy
+    version: 1.1.0
+    provider:
+      name: acme
+    labels:
+      - name: cloud.gardener.cnudie/dso/scanning-hints/binary_id/v1
+        value:
+          policy: skip
+      - name: cloud.gardener.cnudie/dso/scanning-hints/source_analysis/v1
+        value:
+          policy: skip
+      # - name: cloud.gardener.cnudie/responsibles
+      #   value:
+      #     - type: codeowners
+    resources:
+      - name: nginx
+        type: ociImage
+        version: 1.25.3
+        relation: external
+        access:
+          type: ociArtifact/v1
+          imageReference: docker.io/library/nginx:1.25.3
+        labels:
+          - name: gardener.cloud/cve-categorisation
+            value:
+              network_exposure: public
+              authentication_enforced: false
+              user_interaction: end-user
+              confidentiality_requirement: low
+              integrity_requirement: high
+              availability_requirement: high
+      - name: redis
+        type: ociImage
+        version: 7.2.3
+        relation: external
+        access:
+          type: ociArtifact/v1
+          imageReference: docker.io/library/redis:7.2.3
+        labels:
+          - name: gardener.cloud/cve-categorisation
+            value:
+              network_exposure: private
+              authentication_enforced: true
+              user_interaction: operator
+              confidentiality_requirement: high
+              integrity_requirement: high
+              availability_requirement: high
+    sources:
+      - name: ocm-examples-source
+        type: git
+        version: 1.1.0
+        access:
+          type: gitHub/v1
+          repoUrl: https://github.com/ChrisSchneider/ocm-examples
+          commit: 5f99cc45a15e48b1f95c8b724bb7ddbaa76369fc
+
+  # Same as scan-control-skip-some-resources but with legacy labels.
+  - name: chrisschneider.dev/ocm-examples/scan-control-skip-some-resources-legacy
+    version: 1.1.0
+    provider:
+      name: acme
+    # labels:
+    #   - name: cloud.gardener.cnudie/responsibles
+    #     value:
+    #       - type: codeowners
+    resources:
+      - name: alpine-scan-binary
+        type: ociImage
+        version: 3.18.0
+        relation: external
+        access:
+          type: ociArtifact/v1
+          imageReference: docker.io/library/alpine:3.18
+        labels:
+          - name: cloud.gardener.cnudie/dso/scanning-hints/binary_id/v1
+            value:
+              policy: scan
+          - name: gardener.cloud/cve-categorisation
+            value:
+              network_exposure: protected
+              authentication_enforced: true
+              user_interaction: operator
+              confidentiality_requirement: low
+              integrity_requirement: high
+              availability_requirement: low
+      - name: debian-buster-skip-binary
+        type: ociImage
+        version: 10.13.0
+        relation: external
+        access:
+          type: ociArtifact/v1
+          imageReference: docker.io/library/debian:10.13
+        labels:
+          - name: cloud.gardener.cnudie/dso/scanning-hints/binary_id/v1
+            value:
+              policy: skip
+          - name: gardener.cloud/cve-categorisation
+            value:
+              network_exposure: private
+              authentication_enforced: true
+              user_interaction: operator
+              confidentiality_requirement: none
+              integrity_requirement: low
+              availability_requirement: none
+    sources:
+      - name: ocm-examples-source-skip
+        type: git
+        version: 1.1.0
+        access:
+          type: gitHub/v1
+          repoUrl: https://github.com/ChrisSchneider/ocm-examples
+          commit: 63adfec66f02e6b582f11932fe60f891145c4faf
+        labels:
+          - name: cloud.gardener.cnudie/dso/scanning-hints/source_analysis/v1
+            value:
+              policy: skip
+
+  # Umbrella component referencing all scan-control examples.
+  - name: chrisschneider.dev/ocm-examples/scan-control
+    version: 1.1.0
+    provider:
+      name: acme
+    componentReferences:
+      - name: skip-component
+        componentName: chrisschneider.dev/ocm-examples/scan-control-skip-component
+        version: 1.1.0
+      - name: skip-some-resources
+        componentName: chrisschneider.dev/ocm-examples/scan-control-skip-some-resources
+        version: 1.1.0
+      - name: skip-component-legacy
+        componentName: chrisschneider.dev/ocm-examples/scan-control-skip-component-legacy
+        version: 1.1.0
+      - name: skip-some-resources-legacy
+        componentName: chrisschneider.dev/ocm-examples/scan-control-skip-some-resources-legacy
+        version: 1.1.0
