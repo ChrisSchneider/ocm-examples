@@ -24,13 +24,13 @@ Component carrying intentionally vulnerable artifacts across multiple access typ
 | Resource | Type | Kind: Type | Notes |
 |---|---|---|---|
 | `nginx-oci` | `ociImage` | a: `ociArtifact/v1` | nginx 1.14.0, CVE-2019-9511 |
-| `nginx-local` | `ociImage` | i: `file` | same image, OCI layout tar embedded |
+| ~~`nginx-local`~~ | ~~`ociImage`~~ | ~~i: `file`~~ | ~~same image, OCI layout tar embedded~~ *(not implemented yet)* |
 | `kubectl-wget` | `executable` | a: `wget/v1` | kubectl 1.20.0, CVE-2021-25741 |
-| `kubectl-s3` | `executable` | a: `s3/v2` | same binary, local garage S3 |
-| `kubectl-local` | `executable` | i: `file` | same binary, embedded local file |
-| `lodash` | `npmPackage` | a: `npm/v1` | 4.17.15, CVE-2021-23337 + CVE-2020-28500 |
+| ~~`kubectl-s3`~~ | ~~`executable`~~ | ~~a: `s3/v2`~~ | ~~same binary, local garage S3~~ *(not implemented yet)* |
+| ~~`kubectl-local`~~ | ~~`executable`~~ | ~~i: `file`~~ | ~~same binary, embedded local file~~ *(not implemented yet)* |
+| ~~`lodash`~~ | ~~`npmPackage`~~ | ~~a: `npm/v1`~~ | ~~4.17.15, CVE-2021-23337 + CVE-2020-28500~~ *(not implemented yet)* |
 | `vuln-dir-oras` | `directoryTree` | a: `ociArtifact/v1` | log4j-core 2.14.1 JAR, CVE-2021-44228, local Zot |
-| `vuln-dir-s3` | `directoryTree` | a: `s3/v2` | same tarball, local garage S3 |
+| ~~`vuln-dir-s3`~~ | ~~`directoryTree`~~ | ~~a: `s3/v2`~~ | ~~same tarball, local garage S3~~ *(not implemented yet)* |
 | `vuln-dir-local` | `directoryTree` | i: `file` | same tarball, embedded at component creation |
 | `sbom-oras` | `sbom` | a: `ociArtifact/v1` | CycloneDX, CVE-2021-44228 + CVE-2021-23337 |
 
@@ -51,11 +51,11 @@ Examples of `odg.ocm.software/binary-scan-policy` and `odg.ocm.software/source-s
 
 ## Background
 
-OCM ...
+The [Open Component Model (OCM)](https://ocm.software) is an open standard for describing software components and their artifacts in a vendor-neutral way. It defines how to package, sign, and transport software — along with its metadata — across different registries and environments.
 
 ### Artifact Types
 
-OCM ...
+OCM resources carry a `type` that describes what the artifact is (its logical role), independent of where or how it is stored.
 
 | Type | Description |
 |---|---|
