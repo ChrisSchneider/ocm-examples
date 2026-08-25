@@ -1,5 +1,5 @@
 name: chrisschneider.dev/ocm-examples/known-vulnerabilities
-version: 1.0.4
+version: 1.0.5
 provider:
   name: acme
 
@@ -12,6 +12,7 @@ resources:
     access:
       type: ociArtifact/v1
       imageReference: docker.io/library/nginx:1.14.0
+  # Fails currently with OCM CLI
   # - name: nginx-local
   #   type: ociArtifact
   #   version: 1.14.0
@@ -46,17 +47,17 @@ resources:
   #     bucket: ocm-examples
   #     key: kubectl-v1.20.0-linux-amd64
   #     region: garage
-  # - name: kubectl-local
-  #   type: executable
-  #   version: 1.20.0
-  #   relation: local
-  #   extraIdentity:
-  #     os: linux
-  #     architecture: amd64
-  #   input:
-  #     type: File/v1
-  #     path: blobs/kubectl-v1.20.0-linux-amd64
-  #     mediaType: application/octet-stream
+  - name: kubectl-local
+    type: executable
+    version: 1.20.0
+    relation: local
+    extraIdentity:
+      os: linux
+      architecture: amd64
+    input:
+      type: File/v1
+      path: blobs/kubectl-v1.20.0-linux-amd64
+      mediaType: application/octet-stream
 
   # lodash 4.17.15 npm package — CVE-2021-23337 (command injection), CVE-2020-28500 (ReDoS)
   # - name: lodash
@@ -86,14 +87,16 @@ resources:
   #     bucket: ocm-examples
   #     key: vuln-dir.tar.gz
   #     region: garage
-  - name: vuln-dir-local
-    type: blob
-    version: 1.0.0
-    relation: local
-    input:
-      type: Dir/v1
-      path: blobs/vuln-dir/
-      compress: true
+
+  # Fails currently with OCM CLI
+  # - name: vuln-dir-local
+  #   type: blob
+  #   version: 1.0.0
+  #   relation: local
+  #   input:
+  #     type: Dir/v1
+  #     path: blobs/vuln-dir/
+  #     compress: true
 
   # CycloneDX SBOM listing log4j-core 2.14.1, lodash 4.17.15, express 4.17.1
   # CVE-2021-44228 (Log4Shell), CVE-2021-23337, CVE-2022-24999

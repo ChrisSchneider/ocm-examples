@@ -102,18 +102,22 @@ Full reference: [ocm.software/docs/reference/input-and-access-types/](https://oc
 
 ---
 
-## WIP: Building the components on your own
+## Building the components on your own
 
 ## Examples
 
 Log into `ghcr.io` with your GitHub user:
 
-    gh auth token | oras login ghcr.io --registry-config .dockerconfig.json \
-    --username "$(gh api user --jq .login)" --password-stdin
+```sh
+# Optional login with write permissions to GH
+gh auth login --scopes write:packages
 
-*Hint: The project's `./ocmconfig` points to `.dockerconfig.json` and includes S3 credentials. If login to ghcr.io fails, you might have a competing config. Check the merged config with `ocm get config`*
+gh auth token | oras login ghcr.io --registry-config .dockerconfig.json \
+--username "$(gh api user --jq .login)" --password-stdin
+```
 
-*Hint: Run `gh auth login --scopes write:packages` before to also get write permissions to your GH registry*
+*Hint: The project's `./ocmconfig` points to `.dockerconfig.json`. If login to ghcr.io fails, you might have a competing config. Check the merged config with `ocm get config`*
+
 
 Run the scripts in `scripts/` to prepare local resources and create the OCM components:
 
@@ -121,8 +125,8 @@ Run the scripts in `scripts/` to prepare local resources and create the OCM comp
 # Download blobs (nginx OCI layout, kubectl binary, log4j jar + tarballs)
 ./scripts/download-example-blobs.sh
 
-# Push blobs and OCM components to the registry and S3
-./scripts/upload.sh [--registry <host:port>] [--s3-url <url>]
+# Push blobs and OCM components to the registry
+[REGISTRY=<host:port>] ./scripts/upload.sh
 ```
 
 ---
