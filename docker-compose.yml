@@ -1,0 +1,46 @@
+services:
+  zot:
+    image: ghcr.io/project-zot/zot
+    container_name: ocm-zot
+    ports:
+      - 3443:3443
+    volumes:
+      - ./zot/config.json:/etc/zot/config.json:ro
+      - ./zot/htpasswd:/etc/zot/htpasswd:ro
+      - ./zot/certs:/etc/zot/certs:ro
+      - zot-data:/var/lib/registry
+    networks:
+      ocm_dev:
+        aliases:
+          - zot.test
+    restart: unless-stopped
+
+  garage:
+    image: dxflrs/garage:v1.0.1
+    container_name: ocm-garage
+    environment:
+      GARAGE_RPC_SECRET: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      GARAGE_ADMIN_TOKEN: "garage-admin-token"
+    ports:
+      - 3900:3900  # api
+      - 3902:3902  # web
+      - 3903:3903  # admin
+    volumes:
+      - ./garage/garage.toml:/etc/garage.toml:ro
+      - garage-meta:/var/lib/garage/meta
+      - garage-data:/var/lib/garage/data
+    networks:
+      ocm_dev:
+        aliases:
+          - garage.test
+    restart: unless-stopped
+
+volumes:
+  zot-data:
+  garage-meta:
+  garage-data:
+
+networks:
+  ocm_dev:
+    external: true
+    name: odg-core_devcontainer_default

@@ -1,0 +1,94 @@
+# yaml-language-server: $schema=https://ocm.software/0.14/schemas/bindings/go/constructor/schema-2020-12.json
+
+name: chrisschneider.dev/ocm-examples/known-vulnerabilities
+version: 1.2.1
+provider:
+  name: acme
+
+resources:
+  - name: nginx-image-as-oci-artifact
+    type: ociImage/v1
+    version: 1.14.0
+    relation: external
+    access:
+      type: ociArtifact/v1
+      imageReference: docker.io/library/nginx:1.14.0
+  - name: nginx-image-as-local-blob
+    type: ociArtifact/v1
+    version: 1.14.0
+    relation: local
+    input:
+      type: dir/v1
+      path: blobs/nginx-oci-layout/
+      mediaType: application/vnd.ocm.software.oci.layout.v1+tar
+
+  - name: kubectl-via-wget
+    type: executable
+    version: 1.20.0
+    relation: external
+    extraIdentity:
+      os: linux
+      architecture: amd64
+    access:
+      type: wget/v1
+      url: https://dl.k8s.io/release/v1.20.0/bin/linux/amd64/kubectl
+      mediaType: application/octet-stream
+  - name: kubectl-in-s3
+    type: executable
+    version: 1.20.0
+    relation: external
+    extraIdentity:
+      os: linux
+      architecture: amd64
+    access:
+      type: s3/v2
+      endpoint: http://garage.test:3900
+      bucket: ocm-examples
+      key: kubectl-v1.20.0-linux-amd64
+      region: garage
+  - name: kubectl-as-local-blob
+    type: executable
+    version: 1.20.0
+    relation: local
+    extraIdentity:
+      os: linux
+      architecture: amd64
+    input:
+      type: File/v1
+      path: blobs/kubectl-v1.20.0-linux-amd64
+      mediaType: application/octet-stream
+
+  - name: dir-with-log4j-as-oci-artifact
+    type: directoryTree
+    version: 1.0.0
+    relation: external
+    access:
+      type: ociArtifact/v1
+      imageReference: zot.test:3443/ocm-examples/vuln-dir:1.0.0
+  - name: dir-with-log4j-in-s3
+    type: directoryTree
+    version: 1.0.0
+    relation: external
+    access:
+      type: s3/v2
+      endpoint: http://garage.test:3900
+      mediaType: application/x-tar+gzip
+      bucket: ocm-examples
+      key: vuln-dir.tar.gz
+      region: garage
+  - name: dir-with-log4j-as-local-blob
+    type: blob
+    version: 1.0.0
+    relation: local
+    input:
+      type: Dir/v1
+      path: blobs/vuln-dir/
+      compress: true
+
+  - name: sbom-as-oci-artifact
+    type: sbom
+    version: 1.0.0
+    relation: external
+    access:
+      type: ociArtifact/v1
+      imageReference: zot.test:3443/ocm-examples/sbom-oras:1.0.0

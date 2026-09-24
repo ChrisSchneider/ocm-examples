@@ -1,42 +1,48 @@
-# OCM Example Components
+# OCM Component Examples
 
-Test examples of OCM components covering resource and access type combinations, available at:
+Examples of OCM components covering different resource and access type combinations.
 
-* Repo: `ghcr.io/chrisschneider`
-* Component: `chrisschneider.dev/ocm-examples`
+## Example Components
 
-### [1-zot-registry](examples/1-zot-registry.yml)
+### [1-zot-registry](components/1-zot-registry.yml)
 
-Demonstrates a real-world component using an OCI registry (Zot) as the delivery target. Covers multi-arch images, Helm charts, platform-specific binaries via `wget`, and a source reference
+Demonstrates a real-world component using an OCI registry (Zot) as the delivery target. Covers multi-arch images, Helm charts, platform-specific binaries via `wget`, and a source reference:
 
-| Resource | Type | Kind: Type | Notes |
+| Resource | Type | Access Type | Notes |
 |---|---|---|---|
-| `zot` | `ociImage` | a: `ociArtifact/v1` | multi-arch index |
-| `zli` | `executable` | a: `wget/v1` | linux/amd64 |
-| `zli` | `executable` | a: `wget/v1` | linux/arm64 |
-| `zot-chart` | `helmChart` | a: `ociArtifact/v1` | OCI Helm |
-| `zot-source` | `git` | a: `gitHub/v1` | source at v2.1.0 |
+| `zot` | `ociImage` | `ociArtifact/v1` | multi-arch index |
+| `zli` | `executable` | `wget/v1` | linux/amd64 |
+| `zli` | `executable` | `wget/v1` | linux/arm64 |
+| `zot-chart` | `helmChart` | `ociArtifact/v1` | OCI Helm |
+| `zot-source` | `git` | `gitHub/v1` | source repo |
 
-### [2-known-vulnerabilities](examples/2-known-vulnerabilities.yml)
 
-Component carrying intentionally vulnerable artifacts across multiple access types — useful for testing CVE scanners and OCM-integrated security tooling. Each logical artifact appears in up to three forms (OCI/S3/embedded) to exercise different access paths with the same content.
+### [2-known-vulnerabilities](components/2-known-vulnerabilities.yml)
 
-| Resource | Type | Kind: Type | Notes |
+Component carrying intentionally vulnerable artifacts across multiple access types — useful for testing CVE scanners and OCM-integrated security tooling.
+
+| Resource | Type | Access | Notes |
 |---|---|---|---|
-| `nginx-oci` | `ociImage` | a: `ociArtifact/v1` | nginx 1.14.0, CVE-2019-9511 |
-| ~~`nginx-local`~~ | ~~`ociImage`~~ | ~~i: `file`~~ | ~~same image, OCI layout tar embedded~~ *(not implemented yet)* |
-| `kubectl-wget` | `executable` | a: `wget/v1` | kubectl 1.20.0, CVE-2021-25741 |
-| ~~`kubectl-s3`~~ | ~~`executable`~~ | ~~a: `s3/v2`~~ | ~~same binary, local garage S3~~ *(not implemented yet)* |
-| ~~`kubectl-local`~~ | ~~`executable`~~ | ~~i: `file`~~ | ~~same binary, embedded local file~~ *(not implemented yet)* |
-| ~~`lodash`~~ | ~~`npmPackage`~~ | ~~a: `npm/v1`~~ | ~~4.17.15, CVE-2021-23337 + CVE-2020-28500~~ *(not implemented yet)* |
-| `vuln-dir-oras` | `directoryTree` | a: `ociArtifact/v1` | log4j-core 2.14.1 JAR, CVE-2021-44228, local Zot |
-| ~~`vuln-dir-s3`~~ | ~~`directoryTree`~~ | ~~a: `s3/v2`~~ | ~~same tarball, local garage S3~~ *(not implemented yet)* |
-| `vuln-dir-local` | `directoryTree` | i: `file` | same tarball, embedded at component creation |
-| `sbom-oras` | `sbom` | a: `ociArtifact/v1` | CycloneDX, CVE-2021-44228 + CVE-2021-23337 |
+| `nginx-image-as-oci-artifact` | `ociImage/v1` | `ociArtifact/v1` | nginx 1.14.0 image, OCI ref |
+| `nginx-image-as-local-blob` | `ociArtifact/v1` | `LocalBlob/v1` | nginx 1.14.0 image, embedded |
+| `kubectl-via-wget` | `executable` | `wget/v1` | kubectl 1.20.0, URL ref |
+| `kubectl-in-s3` | `executable` | `s3/v2` | kubectl 1.20.0, S3 ref |
+| `kubectl-as-local-blob` | `executable` | `LocalBlob/v1` | kubectl 1.20.0, embedded |
+| `dir-with-log4j-as-oci-artifact` | `directoryTree` | `ociArtifact/v1` | dir with log4j JAR, OCI ref |
+| `dir-with-log4j-in-s3` | `directoryTree` | `s3/v2` | dir with log4j JAR, S3 ref |
+| `dir-with-log4j-as-local-blob` | `blob` | `LocalBlob/v1` | dir with log4j JAR, embedded |
+| `sbom-as-oci-artifact` | `sbom` | `ociArtifact/v1` | CycloneDX SBOM |
 
-### [3-scan-control-labels](examples/3-scan-control-labels.yml)
+Vulnerabilities:
 
-Examples of `odg.ocm.software/binary-scan-policy` and `odg.ocm.software/source-scan-policy` labels — both current and legacy variants — applied at component and resource level.
+* executable kubectl-v1.20.0 with CVE-2021-25741 (symlink path traversal)
+* directory with log4j-core-2.14.1.jar with CVE-2021-44228 (Log4Shell)
+* nginx 1.14.0 container image with CVE-2019-9511, CVE-2019-9513 & dozens of Debian base CVEs
+
+
+### [3-scan-control-labels](components/3-scan-control-labels.yml)
+
+Examples of `odg.ocm.software/binary-scan-policy` and `odg.ocm.software/source-scan-policy` labels — both current and legacy variants — at component and resource level
 
 | Component | Scope | Policy |
 |---|---|---|
@@ -46,143 +52,140 @@ Examples of `odg.ocm.software/binary-scan-policy` and `odg.ocm.software/source-s
 | `scan-control-skip-some-resources-legacy` | per resource | scan / skip (legacy labels) |
 | `scan-control` | — | umbrella |
 
+### [9-all](components/9-all.yml)
 
----
+Umbrella component, referencing all above components
 
-## Background
 
-The [Open Component Model (OCM)](https://ocm.software) is an open standard for describing software components and their artifacts in a vendor-neutral way. It defines how to package, sign, and transport software — along with its metadata — across different registries and environments.
+## Hosting the components locally
 
-### Artifact Types
+**Open as Dev Container to run the commands (they run against Docker-internal hostnames)**
 
-OCM resources carry a `type` that describes what the artifact is (its logical role), independent of where or how it is stored.
+The repo works best together with odg-core opened as Dev Container.
+To run standalone, run `docker network create odg-core_devcontainer_default` before opening.
 
-| Type | Description |
-|---|---|
-| `ociImage` | OCI container image or multi-platform index |
-| `ociArtifact` | Generic OCI registry content (e.g. ORAS-pushed data) |
-| `sbom` | Software Bill of Materials (CycloneDX, SPDX, Syft) |
-| `helmChart` | Helm chart (OCI Helm or classic HTTP chart repo) |
-| `gitOpsTemplate` | Filesystem archive for GitOps/CD frameworks |
-| `npmPackage` | npm package tarball |
-| `executable` | Compiled binary; multi-arch via `extraIdentity` |
-| `directoryTree` | Tarball of a directory tree |
-| `blob` | Opaque bytes |
-| `git` | Source code repository snapshot |
+### Setup local tools
 
-Full spec: [OCM artifact types](https://github.com/open-component-model/ocm-spec/blob/main/doc/04-extensions/01-artifact-types/README.md)
+* **zot** OCI registry running on https://localhost:3443 (`ocmuser` / `ocmpassword`)
+* **garage** S3-compatible store, running on `localhost:3900` (`ocmuser` / `ocmpassword`)
 
----
-
-## Access and Input Types
-
-OCM resources declare where their content lives in one of two ways:
-
-- **`access`** (`a:`) — points to content that already exists somewhere (OCI registry, S3, HTTP, npm, GitHub). Used for `external` resources.
-- **`input`** (`i:`) — embeds content from a local file or directory at component creation time. The OCM CLI stores it as `localBlob/v1` in the resulting archive. Used for `local` resources.
-
-`localBlob/v1` is also what OCM sets on any resource after `ocm transfer` copies it into a component archive, regardless of the original access type.
-
-| Type | Kind | Description |
-|---|---|---|
-| `ociArtifact/v1` | a | Artifact stored in an OCI registry |
-| `localBlob/v1` | a | Artifact embedded in the OCM archive (set by transfer or input) |
-| `wget/v1` | a | HTTP/HTTPS download |
-| `s3/v1`, `s3/v2` | a | AWS S3 or S3-compatible object storage |
-| `helm/v1` | a | Helm chart repository (HTTP or OCI) |
-| `gitHub/v1` | a | GitHub source tree at a specific commit |
-| `npm/v1` | a | npm registry |
-| `ociImageLayer/v1` | a | Single OCI blob by digest |
-| `file` | i | Single local file embedded as a blob |
-| `dir` | i | Local directory packed as a tar archive |
-| `docker` | i | Local Docker image exported and embedded |
-| `helm` | i | Local Helm chart directory |
-
-Full reference: [ocm.software/docs/reference/input-and-access-types/](https://ocm.software/docs/reference/input-and-access-types/)
-
----
-
-## Building the components on your own
-
-## Examples
-
-Log into `ghcr.io` with your GitHub user:
+**Outside of the Dev Container on your Host**
 
 ```sh
-# Optional login with write permissions to GH
-gh auth login --scopes write:packages
-
-gh auth token | oras login ghcr.io --registry-config .dockerconfig.json \
---username "$(gh api user --jq .login)" --password-stdin
-```
-
-*Hint: The project's `./ocmconfig` points to `.dockerconfig.json`. If login to ghcr.io fails, you might have a competing config. Check the merged config with `ocm get config`*
-
-
-Run the scripts in `scripts/` to prepare local resources and create the OCM components:
-
-```sh
-# Download blobs (nginx OCI layout, kubectl binary, log4j jar + tarballs)
-./scripts/download-example-blobs.sh
-
-# Push blobs and OCM components to the registry
-[REGISTRY=<host:port>] ./scripts/upload.sh
-```
-
----
-
-## WIP: Setting up the Local Registries
-
-**Prerequisites:**
-
-* `docker compose`
-* `mkcert`
-* `oras`
-* `skopeo`
-* `aws` (AWS CLI v2)
-* `ocm` (OCM CLI)
-* `gh` (GitHub CLI, for ghcr.io auth) - logged into your GitHub account
-
-```sh
-cd local-registries-wip
-
-# 0. If needed, create local mkcert CA first:
+# Create local CA:
 mkcert -install
 
-# 1. Create TLS certs:
-mkcert -cert-file "zot/certs/tls.crt" -key-file "zot/certs/tls.key" localhost 127.0.0.1 registry.internal
+# Create TLS certs for zot (needed for ODG):
+mkcert -cert-file "zot/certs/tls.crt" -key-file "zot/certs/tls.key" localhost zot zot.test
 
-# 2. Point your computer IP to registry.internal
-
-TODO: add to /etc/hosts
-
-TODO: Why not localhost? --> OCM component references
-
-# 3. Start registry with `docker-compose.yaml`:
-docker-compose up
+# start the services with docker-compose
+docker-compose up -d
 ```
 
-| Service | Type | Port | Purpose |
-|---|---|---|---|
-| **zot** | OCI registry | `https://localhost:10500` | `ociArtifact/v1`, `ociImage`, OCI Helm |
-| **garage** | S3-compatible store | `localhost:10900` | `s3/v1`, `s3/v2` (bucket: `ocm-examples`) |
+Then continue in the Dev Container:
 
-**Credentials:** `ocmuser` / `ocmpassword` (both services).
+```sh
+# Create garage bucket & user:
+./garage/init.sh
 
----
+# Log into zot & generate .dockerconfig.json
+skopeo login zot.test:3443 --username ocmuser --password ocmpassword --authfile .dockerconfig.json
+```
 
-## WIP: Configure ODG
+### Build the components
 
-`extensions_cfg`
+```sh
+# Download & create blobs
+./blobs/download.sh
+
+# Push blobs and OCM components to OCI registry & S3 bucket
+./components/upload.sh
+```
+
+*Hint: The project's `./ocmconfig` points to `.dockerconfig.json`. If login fails, you might have a competing config. Check the merged config with `ocm get config`*
+
+## Hints for scanning components with Trivy
+
+Examples to find CVEs before OCM transfer:
+
+* `trivy rootfs --scanners vuln blobs/kubectl-v1.20.0-linux-amd64` (not found with trivy fs)
+* `trivy image --scanners vuln --input blobs/nginx-oci-layout`
+* `trivy rootfs --scanners vuln blobs/vuln-dir/` (not found with trivy fs)
+
+Examples to find CVEs after OCM transfer:
+
+| Resource | Result | Notes |
+|---|---|---|
+| `nginx-image-as-oci-artifact` | Found | `trivy image` with URL |
+| `nginx-image-as-local-blob` | Found | `trivy image` on digest from `localReference` |
+| `kubectl-as-wget` | Not Found | Trivy skips: file is no longer `+x` after `wget` |
+| `kubectl-as-local-blob` | Not Found | Trivy skips: file is no longer `+x` after `oras blob fetch` (`trivy image` on blob gives `manifest unknown`) |
+| `kubectl-in-s3` | Not Found | Trivy skips: file is no longer `+x` after S3 download |
+| `dir-with-log4j-as-oci-artifact` | Found | `oras pull`, untar, `trivy rootfs` (`trivy image` gives `unsupported artifact type`) |
+| `dir-with-log4j-as-local-blob` | Found | `oras blob fetch`, untar, `trivy rootfs` (`trivy image` on blob gives `manifest unknown`) |
+| `dir-with-log4j-in-s3` | Found | `trivy rootfs` on S3 download |
+
+
+## Import in Open Delivery Gear
+
+The following example shows how you can configure ODG when it runs in a Dev Container.
+Therefore Zot and Garage run in the same Docker network (`odg-core_devcontainer_default`).
+
+Configure ODG to work with Zot and Garage:
+
+* If running ODG in container:
+  * Copy CA certs from `$(mkcert -CAROOT)/rootCA.pem` to `/usr/local/share/ca-certificates/rootCA.crt`
+  * Run `sudo update-ca-certificates`
+* Set `export REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt` (or to your local CA trust store)
+  so that Python requests lib picks up the custom CA
+* Point S3 to Garage instead of AWS:
+  * `AWS_ENDPOINT_URL=http://garage.test:3900`y)
+  * `AWS_REQUEST_CHECKSUM_CALCULATION=when_required`
+  * `AWS_RESPONSE_CHECKSUM_VALIDATION=when_required`
+
+Add to `extensions_cfg`, e.g. to *artefact_enumerator*:
 
 ```yaml
 artefact_enumerator:
   enabled: True
   components:
     - component_name: chrisschneider.dev/ocm-examples
-      ocm_repo_url: localhost:10500
-...
+      ocm_repo_url: zot.test:3443
 ```
 
-secrets/aws
-secrets/oci-registry
+Add component in `src/features/features_cfg.yaml`:
+
+```yaml
+- id: 03e237b4-434e-4e1c-b786-5ceb6cc76c1e
+  name: chrisschneider.dev/ocm-examples
+  displayName: OCM Examples
+  type: ODG
+  version: greatest
+  icon: home
+  dependencies: []
+```
+
+Add to `src/odg/ocm_repo_mappings.yaml`:
+
+```yaml
+- repository: zot.test:3443
+  prefixes: chrisschneider.dev
+```
+
+Create `src/secrets/aws/local-garage.yaml`:
+
+```yaml
+access_key_id: GK626462227e739523e7936f5f
+secret_access_key: 876ae9b4f20503bea48674e34c2da95d581626721131d54c5a3257e0b21c725d
+region: garage
+```
+
+Create `src/secrets/oci-registry/local-zot.yaml`:
+
+```yaml
+privileges: readonly
+username: ocmuser
+password: ocmpassword
+image_reference_prefixes:
+  - zot.test:3443
+```

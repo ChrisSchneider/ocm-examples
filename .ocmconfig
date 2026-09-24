@@ -1,5 +1,13 @@
 type: generic.config.ocm.software/v1
 configurations:
+  - type: generic.config.ocm.software/v1
+    configurations:
+      - type: http.config.ocm.software/v1alpha1
+        timeout: 300s              # End-to-end deadline per HTTP request
+        tlsHandshakeTimeout: 10s   # Maximum time for the TLS handshake
+        responseHeaderTimeout: 30s # Time to wait for the first response header byte
+        idleConnTimeout: 90s       # How long a keep-alive connection stays pooled
+        tcpDialTimeout: 5s         # TCP connection establishment deadline
   - type: credentials.config.ocm.software
     repositories:
       - repository:
@@ -8,7 +16,7 @@ configurations:
     consumers:
       - identity:
           type: S3
-          hostname: localhost:10900
+          hostname: localhost:3900
           bucket: ocm-examples
         credentials:
           - type: Credentials

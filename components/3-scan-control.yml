@@ -1,9 +1,11 @@
+# yaml-language-server: $schema=https://ocm.software/0.14/schemas/bindings/go/constructor/schema-2020-12.json
+
 components:
 
   # Component-level skip: all resources inherit skip for both scan types.
   # Use case: third-party component already scanned upstream.
   - name: chrisschneider.dev/ocm-examples/scan-control-skip-component
-    version: 1.1.0
+    version: 1.1.2
     provider:
       name: acme
     labels:
@@ -15,10 +17,10 @@ components:
         version: v1
         value:
           policy: skip
-      # - name: odg.ocm.software/responsibles
-      #   version: v1
-      #   value:
-      #     - type: codeowners
+      - name: odg.ocm.software/responsibles
+        version: v1
+        value:
+          - type: codeowners
     resources:
       - name: nginx
         type: ociImage
@@ -57,7 +59,7 @@ components:
     sources:
       - name: ocm-examples-source
         type: git
-        version: 1.1.0
+        version: 1.1.2
         access:
           type: gitHub/v1
           repoUrl: https://github.com/ChrisSchneider/ocm-examples
@@ -65,14 +67,14 @@ components:
 
   # Resource-level labels: scan-worthy image gets scan, minimal distroless gets skip.
   - name: chrisschneider.dev/ocm-examples/scan-control-skip-some-resources
-    version: 1.1.0
+    version: 1.1.2
     provider:
       name: acme
-    # labels:
-    #   - name: odg.ocm.software/responsibles
-    #     version: v1
-    #     value:
-    #       - type: codeowners
+    labels:
+      - name: odg.ocm.software/responsibles
+        version: v1
+        value:
+          - type: codeowners
     resources:
       # alpine has known CVEs — meaningful to scan
       - name: alpine-scan-binary
@@ -121,7 +123,7 @@ components:
     sources:
       - name: ocm-examples-source-skip
         type: git
-        version: 1.1.0
+        version: 1.1.2
         access:
           type: gitHub/v1
           repoUrl: https://github.com/ChrisSchneider/ocm-examples
@@ -134,7 +136,7 @@ components:
 
   # Same as scan-control-skip-component but with legacy labels.
   - name: chrisschneider.dev/ocm-examples/scan-control-skip-component-legacy
-    version: 1.1.0
+    version: 1.1.2
     provider:
       name: acme
     labels:
@@ -144,9 +146,9 @@ components:
       - name: cloud.gardener.cnudie/dso/scanning-hints/source_analysis/v1
         value:
           policy: skip
-      # - name: cloud.gardener.cnudie/responsibles
-      #   value:
-      #     - type: codeowners
+      - name: cloud.gardener.cnudie/responsibles
+        value:
+          - type: codeowners
     resources:
       - name: nginx
         type: ociImage
@@ -183,7 +185,7 @@ components:
     sources:
       - name: ocm-examples-source
         type: git
-        version: 1.1.0
+        version: 1.1.2
         access:
           type: gitHub/v1
           repoUrl: https://github.com/ChrisSchneider/ocm-examples
@@ -191,13 +193,13 @@ components:
 
   # Same as scan-control-skip-some-resources but with legacy labels.
   - name: chrisschneider.dev/ocm-examples/scan-control-skip-some-resources-legacy
-    version: 1.1.0
+    version: 1.1.2
     provider:
       name: acme
-    # labels:
-    #   - name: cloud.gardener.cnudie/responsibles
-    #     value:
-    #       - type: codeowners
+    labels:
+      - name: cloud.gardener.cnudie/responsibles
+        value:
+          - type: codeowners
     resources:
       - name: alpine-scan-binary
         type: ociImage
@@ -240,7 +242,7 @@ components:
     sources:
       - name: ocm-examples-source-skip
         type: git
-        version: 1.1.0
+        version: 1.1.2
         access:
           type: gitHub/v1
           repoUrl: https://github.com/ChrisSchneider/ocm-examples
@@ -252,19 +254,19 @@ components:
 
   # Umbrella component referencing all scan-control examples.
   - name: chrisschneider.dev/ocm-examples/scan-control
-    version: 1.1.0
+    version: 1.1.2
     provider:
       name: acme
     componentReferences:
       - name: skip-component
         componentName: chrisschneider.dev/ocm-examples/scan-control-skip-component
-        version: 1.1.0
+        version: 1.1.2
       - name: skip-some-resources
         componentName: chrisschneider.dev/ocm-examples/scan-control-skip-some-resources
-        version: 1.1.0
+        version: 1.1.2
       - name: skip-component-legacy
         componentName: chrisschneider.dev/ocm-examples/scan-control-skip-component-legacy
-        version: 1.1.0
+        version: 1.1.2
       - name: skip-some-resources-legacy
         componentName: chrisschneider.dev/ocm-examples/scan-control-skip-some-resources-legacy
-        version: 1.1.0
+        version: 1.1.2

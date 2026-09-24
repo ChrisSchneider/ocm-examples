@@ -1,5 +1,7 @@
 .dockerconfig.json
-examples/blobs/*
-!examples/blobs/sbom-vulnerable.cdx.json
-local-registries/zot/certs/*.crt
-local-registries/zot/certs/*.key
+.DS_Store
+blobs/*
+!blobs/sbom-vulnerable.cdx.json
+!blobs/download.sh
+zot/certs/*.crt
+zot/certs/*.key
