@@ -1,7 +1,7 @@
 .dockerconfig.json
 .DS_Store
-blobs/*
-!blobs/sbom-vulnerable.cdx.json
-!blobs/download.sh
+components/blobs/*
+!components/blobs/sbom-vulnerable.cdx.json
+!components/blobs/download.sh
 zot/certs/*.crt
 zot/certs/*.key

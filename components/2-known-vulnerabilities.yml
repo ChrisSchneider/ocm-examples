@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=https://ocm.software/0.14/schemas/bindings/go/constructor/schema-2020-12.json
 
 name: chrisschneider.dev/ocm-examples/known-vulnerabilities
-version: 1.2.1
+version: 1.2.2
 provider:
   name: acme
 
@@ -43,8 +43,8 @@ resources:
     access:
       type: s3/v2
       endpoint: http://garage.test:3900
-      bucket: ocm-examples
-      key: kubectl-v1.20.0-linux-amd64
+      bucketName: ocm-examples
+      objectKey: kubectl-v1.20.0-linux-amd64
       region: garage
   - name: kubectl-as-local-blob
     type: executable
@@ -73,8 +73,8 @@ resources:
       type: s3/v2
       endpoint: http://garage.test:3900
       mediaType: application/x-tar+gzip
-      bucket: ocm-examples
-      key: vuln-dir.tar.gz
+      bucketName: ocm-examples
+      objectKey: vuln-dir.tar.gz
       region: garage
   - name: dir-with-log4j-as-local-blob
     type: blob

@@ -96,7 +96,7 @@ skopeo login zot.test:3443 --username ocmuser --password ocmpassword --authfile 
 
 ```sh
 # Download & create blobs
-./blobs/download.sh
+./component/blobs/download.sh
 
 # Push blobs and OCM components to OCI registry & S3 bucket
 ./components/upload.sh
@@ -119,11 +119,13 @@ Examples to find CVEs after OCM transfer:
 | `nginx-image-as-oci-artifact` | Found | `trivy image` with URL |
 | `nginx-image-as-local-blob` | Found | `trivy image` on digest from `localReference` |
 | `kubectl-as-wget` | Partial | `trivy rootfs`, only with `chmod +x` after `wget` |
-| `kubectl-as-local-blob` | Partial | `trivy rootfs`, only with `chmod +x` after `oras blob fetch` (`trivy image` on blob gives `manifest unknown`) |
+| `kubectl-as-local-blob` | Partial | `trivy rootfs`, only with `chmod +x` after `ocm download resource` (`trivy image` on blob gives `manifest unknown`) |
 | `kubectl-in-s3` | Partial | Trivy skips: file is no longer `+x` after S3 download |
-| `dir-with-log4j-as-oci-artifact` | Found | `oras pull`, untar, `trivy rootfs` (`trivy image` gives `unsupported artifact type`) |
-| `dir-with-log4j-as-local-blob` | Found | `oras blob fetch`, untar, `trivy rootfs` (`trivy image` on blob gives `manifest unknown`) |
-| `dir-with-log4j-in-s3` | Found | `trivy rootfs` on S3 download |
+| `dir-with-log4j-as-oci-artifact` | Found | `ocm download resource`, `trivy rootfs` (`trivy image` gives `unsupported artifact type`) |
+| `dir-with-log4j-as-local-blob` | Found | `ocm download resource`, `trivy rootfs` (`trivy image` on blob gives `manifest unknown`) |
+| `dir-with-log4j-in-s3` | Found | `ocm download resource`, `trivy rootfs` |
+
+Download with `ocm download resource zot.test:3443//chrisschneider.dev/ocm-examples/known-vulnerabilities:1.2.1 --identity name=kubectl-as-local-blob`
 
 
 ## Import in Open Delivery Gear

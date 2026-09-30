@@ -11,7 +11,7 @@ componentReferences:
     version: 2.1.5
   - name: known-vulnerabilities
     componentName: chrisschneider.dev/ocm-examples/known-vulnerabilities
-    version: 1.2.1
+    version: 1.2.2
   - name: scan-control
     componentName: chrisschneider.dev/ocm-examples/scan-control
     version: 1.1.2

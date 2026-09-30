@@ -17,7 +17,17 @@ configurations:
       - identity:
           type: S3
           hostname: localhost:3900
-          bucket: ocm-examples
+          bucketName: ocm-examples
+        credentials:
+          - type: Credentials
+            properties:
+              awsAccessKeyId: GK626462227e739523e7936f5f
+              awsSecretAccessKey: 876ae9b4f20503bea48674e34c2da95d581626721131d54c5a3257e0b21c725d
+              region: garage
+      - identity:
+          type: S3
+          hostname: garage.test:3900
+          bucketName: ocm-examples
         credentials:
           - type: Credentials
             properties:

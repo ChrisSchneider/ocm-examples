@@ -20,7 +20,7 @@ sudo /tmp/awscliv2/aws/install --bin-dir /usr/local/bin --install-dir /usr/local
 rm -rf /tmp/awscliv2.zip /tmp/awscliv2
 
 # OCM CLI
-wget -qO- https://ocm.software/install-cli.sh | OCM_VERSION=0.16 bash
+wget -qO- https://ocm.software/install-cli.sh | OCM_VERSION=0.17 bash
 
 # Claude Code
 npm install -g @anthropic-ai/claude-code

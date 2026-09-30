@@ -23,13 +23,13 @@ ocm_add_cv() {
 }
 
 # Upload kubectl to S3
-aws s3 cp "blobs/kubectl-v1.20.0-linux-amd64" \
+aws s3 cp "components/blobs/kubectl-v1.20.0-linux-amd64" \
   "s3://ocm-examples/kubectl-v1.20.0-linux-amd64" \
   --endpoint-url "$S3_ENDPOINT" \
   --checksum-algorithm CRC32
 
 # Upload vuln dir to S3
-aws s3 cp "blobs/vuln-dir.tar.gz" \
+aws s3 cp "components/blobs/vuln-dir.tar.gz" \
   "s3://ocm-examples/vuln-dir.tar.gz" \
   --endpoint-url "$S3_ENDPOINT" \
   --checksum-algorithm CRC32
@@ -37,12 +37,12 @@ aws s3 cp "blobs/vuln-dir.tar.gz" \
 # Push vuln-dir to registry
 oras push --registry-config .dockerconfig.json \
   "$REGISTRY/ocm-examples/vuln-dir:1.0.0" \
-  "blobs/vuln-dir.tar.gz:application/vnd.oci.image.layer.v1.tar+gzip"
+  "components/blobs/vuln-dir.tar.gz:application/vnd.oci.image.layer.v1.tar+gzip"
 
 # Push SBOM to registry
 oras push --registry-config .dockerconfig.json \
   "$REGISTRY/ocm-examples/sbom-oras:1.0.0" \
-  "blobs/sbom-vulnerable.cdx.json:application/vnd.cyclonedx+json"
+  "components/blobs/sbom-vulnerable.cdx.json:application/vnd.cyclonedx+json"
 
 # Push ocm components
 ocm_add_cv --repository "$REGISTRY" --constructor components/1-zot-registry.yml
